@@ -1,0 +1,121 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-11-28 20:34+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || "
+"(n%100>=11 && n%100<=14)? 2 : 3);\n"
+
+#: .\movies\apps.py:7
+msgid "movies"
+msgstr "фильмы"
+
+#: .\movies\models.py:26
+msgid "Name of genre"
+msgstr "Название жанра"
+
+#: .\movies\models.py:27
+msgid "Description genre"
+msgstr "Описание жанра"
+
+#: .\movies\models.py:31
+msgid "Genre"
+msgstr "Жанр"
+
+#: .\movies\models.py:32
+msgid "Genres"
+msgstr "Жанры"
+
+#: .\movies\models.py:45
+msgid "Full name"
+msgstr "Полное имя"
+
+#: .\movies\models.py:49
+msgid "Person"
+msgstr "Сотрудник"
+
+#: .\movies\models.py:50
+msgid "Persons"
+msgstr "Сотрудники"
+
+#: .\movies\models.py:65
+msgid "drama"
+msgstr "драма"
+
+#: .\movies\models.py:66
+msgid "comedy"
+msgstr "комедия"
+
+#: .\movies\models.py:68
+msgid "Title of film"
+msgstr "Название фильма"
+
+#: .\movies\models.py:69
+msgid "Description of film"
+msgstr "Описание фильма"
+
+#: .\movies\models.py:70
+msgid "Creation date"
+msgstr "Дата создания"
+
+#: .\movies\models.py:72
+msgid "Rating of film"
+msgstr "Рейтинг фильма"
+
+#: .\movies\models.py:86
+msgid "type"
+msgstr "тип"
+
+#: .\movies\models.py:95
+msgid "Film"
+msgstr "Фильм"
+
+#: .\movies\models.py:96
+msgid "Films"
+msgstr "Фильмы"
+
+#: .\movies\models.py:115
+msgid "GenreFilmwork"
+msgstr "Жанры в фильме"
+
+#: .\movies\models.py:116
+msgid "GenreFilmworks"
+msgstr "Жанры"
+
+#: .\movies\models.py:127
+msgid "actor"
+msgstr "актер"
+
+#: .\movies\models.py:128
+msgid "director"
+msgstr "директор"
+
+#: .\movies\models.py:129
+msgid "writer"
+msgstr "писатель"
+
+#: .\movies\models.py:134
+msgid "Role"
+msgstr "Роль"
+
+#: .\movies\models.py:141
+msgid "PersonFilmwork"
+msgstr "Сотрудник"
+
+#: .\movies\models.py:142
+msgid "PersonFilmworks"
+msgstr "Сотрудники"

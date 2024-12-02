@@ -2,24 +2,26 @@ import os
 import sqlite3
 import logging
 from contextlib import closing, contextmanager
-from dataclasses import dataclass, astuple
+from dataclasses import dataclass, astuple, fields
 from typing import Generator
 from uuid import UUID
 from datetime import date, datetime
+from pathlib import Path
 
 import psycopg
 from psycopg.rows import dict_row
 import zoneinfo
 from dotenv import load_dotenv
 
-from constants import (BATCH_SIZE, LOGGER_NAME, LOGGER_FILE,
+from constants import (BATCH_SIZE, LOGGER_NAME,
                        LOGGER_CODE, LOGGER_FORMAT,
-                       FILM_WORK_FIELDS, DB_PATH, DATE_FORMAT)
+                       FILM_WORK_FIELDS, DATE_FORMAT)
 
 load_dotenv()
 
-db_path = DB_PATH
-date_format = DATE_FORMAT
+BASE_DIR = Path(__file__).parent.absolute()
+db_path = BASE_DIR / 'db.sqlite'
+log_path = BASE_DIR / 'logger.log'
 
 
 @contextmanager
@@ -54,13 +56,13 @@ class Genre:
             self.id = UUID(self.id)
         if isinstance(self.created_at, str):
             self.created_at = datetime.strptime(
-                self.created_at, date_format
+                self.created_at, DATE_FORMAT
             ).replace(
                 tzinfo=zoneinfo.ZoneInfo(key='Etc/UTC')
             )
         if isinstance(self.updated_at, str):
             self.updated_at = datetime.strptime(
-                self.updated_at, date_format
+                self.updated_at, DATE_FORMAT
             ).replace(
                 tzinfo=zoneinfo.ZoneInfo(key='Etc/UTC')
             )
@@ -78,13 +80,13 @@ class Person:
             self.id = UUID(self.id)
         if isinstance(self.created_at, str):
             self.created_at = datetime.strptime(
-                self.created_at, date_format
+                self.created_at, DATE_FORMAT
             ).replace(
                 tzinfo=zoneinfo.ZoneInfo(key='Etc/UTC')
             )
         if isinstance(self.updated_at, str):
             self.updated_at = datetime.strptime(
-                self.updated_at, date_format
+                self.updated_at, DATE_FORMAT
             ).replace(
                 tzinfo=zoneinfo.ZoneInfo(key='Etc/UTC')
             )
@@ -108,13 +110,13 @@ class Filmwork:
             self.creation_date = date(self.creation_date)
         if isinstance(self.created_at, str):
             self.created_at = datetime.strptime(
-                self.created_at, date_format
+                self.created_at, DATE_FORMAT
             ).replace(
                 tzinfo=zoneinfo.ZoneInfo(key='Etc/UTC')
             )
         if isinstance(self.updated_at, str):
             self.updated_at = datetime.strptime(
-                self.updated_at, date_format
+                self.updated_at, DATE_FORMAT
             ).replace(
                 tzinfo=zoneinfo.ZoneInfo(key='Etc/UTC')
             )
@@ -135,7 +137,7 @@ class GenreFilmwork:
             self.genre_id = UUID(self.genre_id)
         if isinstance(self.created_at, str):
             self.created_at = datetime.strptime(
-                self.created_at, date_format
+                self.created_at, DATE_FORMAT
             ).replace(
                 tzinfo=zoneinfo.ZoneInfo(key='Etc/UTC')
             )
@@ -158,7 +160,7 @@ class PersonFilmwork:
             self.person_id = UUID(self.person_id)
         if isinstance(self.created_at, str):
             self.created_at = datetime.strptime(
-                self.created_at, date_format
+                self.created_at, DATE_FORMAT
             ).replace(
                 tzinfo=zoneinfo.ZoneInfo(key='Etc/UTC')
             )
@@ -171,21 +173,6 @@ TABLE_CLASS = {
     'genre_film_work': GenreFilmwork,
     'person_film_work': PersonFilmwork
 }
-
-
-POSTGRES_TABLES_FIELDS = {
-    'film_work':
-        '(id, title, description, creation_date, rating,\n'
-        'type, created, modified) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)',
-    'genre': '(id, name, description, created,\n'
-    'modified) VALUES (%s, %s, %s, %s, %s)',
-    'person': '(id,full_name,created,modified) VALUES (%s, %s, %s, %s)',
-    'genre_film_work': '(id, film_work_id,\n'
-    'genre_id, created) VALUES (%s, %s, %s, %s)',
-    'person_film_work': '(id, film_work_id, person_id,\n'
-    'role, created) VALUES (%s, %s, %s, %s, %s)'
-}
-
 
 def extract_data(
     sqlite_cursor: sqlite3.Cursor, table_name
@@ -210,7 +197,15 @@ def load_data(
     sqlite_cursor: sqlite3.Cursor, pg_cursor: psycopg.Cursor, table_name, model
 ):
     for batch in transform_data(sqlite_cursor, table_name, model):
-        query = f'INSERT INTO content.{table_name} {POSTGRES_TABLES_FIELDS[table_name]} ON CONFLICT (id) DO NOTHING' # noqa
+        columns = ", ".join(
+            field.name for field in fields(model)
+        ).replace(
+            'updated_at', 'modified'
+        ).replace(
+            'created_at', 'created'
+        )
+        values = ', '.join(['%s'] * len(fields(model)))
+        query = f'INSERT INTO content.{table_name} ({columns}) VALUES ({values}) ON CONFLICT (id) DO NOTHING' # noqa
         batch_as_tuples = [astuple(value) for value in batch]
         pg_cursor.executemany(query, batch_as_tuples)
 
@@ -252,7 +247,7 @@ if __name__ == '__main__':
         logger = logging.getLogger(LOGGER_NAME)
         logging.basicConfig(
             format=LOGGER_FORMAT,
-            filename=LOGGER_FILE,
+            filename=log_path,
             encoding=LOGGER_CODE,
             level=logging.DEBUG
         )
@@ -271,4 +266,4 @@ if __name__ == '__main__':
                 logger.info(
                     f'Тесты успешно для данных {table_name} пройдены!!!'
                 )
-    logger.info('🎉 Данные успешно перенесены!!!')
+    logger.info('Данные успешно перенесены!!!')

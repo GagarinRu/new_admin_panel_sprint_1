@@ -1,28 +1,30 @@
+import os
 import random
 import uuid
 
 import psycopg
-
+from dotenv import load_dotenv
 import datetime
 from faker import Faker
 
 
+load_dotenv()
+
 if __name__ == '__main__':
     fake = Faker()
 
-    # Подготавливаем DSN (Data Source Name) для подключения к БД Postgres
     dsn = {
-        'dbname': 'movies_database',
-        'user': 'app',
-        'password': '123qwe',
-        'host': 'localhost',
-        'port': 5432,
-        'options': '-c search_path=content',
+        'dbname': os.getenv('POSTGRES_DB'),
+        'user': os.getenv('POSTGRES_USER'),
+        'password': os.getenv('POSTGRES_PASSWORD'),
+        'host': os.getenv('POSTGRES_HOST'),
+        'port': os.getenv('POSTGRES_PORT'),
+        'options': os.getenv('POSTGRES_OPTION'),
     }
 
     PERSONS_COUNT = 100000
 
-    now = datetime.datetime.now(datetime.UTC)
+    now = datetime.datetime.now(datetime.timezone.utc)
 
     with psycopg.connect(**dsn) as conn, conn.cursor() as cur:
         persons_ids = [str(uuid.uuid4()) for _ in range(PERSONS_COUNT)]
